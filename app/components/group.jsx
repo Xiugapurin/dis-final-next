@@ -2,14 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import Link from "next/link";
 // import { UserAuth } from "../context/AuthContext";
+import Event from "./event";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Navigation, Plus, Star, UsersRound } from "lucide-react";
+import { Eye, Navigation, Plus, Star, UsersRound } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { flightRouterStateSchema } from "next/dist/server/app-render/types";
+
+const USER_ID = "user4";
 
 const CreateGroupDialog = ({ setJoinedGroups, setOpen }) => {
   const [groupName, setGroupName] = useState("");
@@ -25,7 +28,7 @@ const CreateGroupDialog = ({ setJoinedGroups, setOpen }) => {
     setError("");
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URI}/api/group/0/user_001`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URI}/api/group/0/${USER_ID}`, {
         group_name: groupName,
       });
       const newGroup = response.data.group;
@@ -67,7 +70,7 @@ const CreateGroupDialog = ({ setJoinedGroups, setOpen }) => {
   );
 };
 
-export default function GroupTable() {
+const GroupTable = ({ viewGroup }) => {
   // const { user } = UserAuth();
   const [open, setOpen] = useState(false);
   const [groups, setGroups] = useState([]);
@@ -83,7 +86,7 @@ export default function GroupTable() {
         // const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URI}/api/paletters`, {
         //   headers: { Authorization: `Bearer ${user.accessToken}` },
         // });
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URI}/api/groups/user_001`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URI}/api/groups/${USER_ID}`);
         const data = response.data;
 
         setGroups(data);
@@ -94,12 +97,12 @@ export default function GroupTable() {
     };
 
     fetchGroups();
-  }, [isLoading]);
+  }, []);
   // }, [user.accessToken]);
 
   const handleJoinGroup = async (group_id) => {
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URI}/api/group/${group_id}/user_001`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URI}/api/group/${group_id}/${USER_ID}`, {
         group_name: "",
       });
       const data = response.data.group;
@@ -123,11 +126,14 @@ export default function GroupTable() {
     <div className="flex flex-col gap-4 h-screen p-6">
       <div className="flex flex-row-reverse w-full py-4 items-end">
         <div className="flex flex-row w-full justify-between items-center">
-          <h1 className="text-3xl font-bold">組別列表</h1>
+          <div className="flex flex-row items-center gap-4">
+            <UsersRound size={32} className="text-primary" />
+            <h1 className="text-3xl font-bold">組別列表</h1>
+          </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger>
               <div className="flex flow-row gap-2 text-white items-center bg-primary px-4 py-2 rounded-lg shadow-lg hover:scale-105 transition-transform">
-                <Plus size={24} />
+                <Plus size={16} />
                 <h1 className="font-bold">創建新組別</h1>
               </div>
             </DialogTrigger>
@@ -153,22 +159,23 @@ export default function GroupTable() {
           <Separator />
 
           <div className="flex flex-col w-full gap-4 justify-between items-center p-2 max-h-[580px] overflow-y-auto">
-            {joinedGroups.length > 0 ? (
-              joinedGroups.map((group, index) => {
+            {isLoading ? (
+              Array.from({ length: 4 }).map((_, index) => (
+                <Skeleton key={`skeleton-${index}`} className="w-full h-[100px] rounded-xl shadow-lg" />
+              ))
+            ) : joinedGroups.length > 0 ? (
+              joinedGroups.map((group) => {
                 return (
                   <motion.div
                     key={`joined-${group.group_id}`}
                     className="flex flex-row w-full gap-4"
-                    initial={{ y: -50 + index * 10, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -50 + index * 10, opacity: 0 }}
-                    transition={{ duration: 0.6, type: "spring" }}
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 1, type: "spring" }}
                   >
-                    <Link
-                      className="flex flex-row w-full justify-between items-center p-4 rounded-xl shadow-md hover:scale-[1.02] transition-transform"
-                      href={`/group/${group.group_id}`}
-                    >
-                      <div className="flex flex-col w-full items-start justify-between">
+                    <div className="flex flex-row justify-between items-center w-5/6 p-4 rounded-xl shadow-md hover:scale-[1.02] transition-transform">
+                      <div className="flex flex-col w-full h-full items-start justify-between">
                         <div className="flex flex-row w-full gap-2 items-center">
                           <UsersRound size={16} />
                           <h2 className="text-sm">組別</h2>
@@ -182,7 +189,15 @@ export default function GroupTable() {
                         <h2 className="text-sm font-bold">成員人數</h2>
                         <p className="text-3xl text-primary">{group.member_count}</p>
                       </div>
-                    </Link>
+                    </div>
+
+                    <div
+                      className="flex flex-col w-1/6 h-full gap-1 justify-center items-center hover:cursor-pointer hover:scale-105 transition-transform"
+                      onClick={() => viewGroup(group.group_id, group.group_name)}
+                    >
+                      <Eye />
+                      <p className="text-md">查看</p>
+                    </div>
                   </motion.div>
                 );
               })
@@ -210,7 +225,7 @@ export default function GroupTable() {
           </div>
           <Separator />
           <div className="flex flex-col w-full gap-4 justify-between items-center p-2 max-h-[580px] overflow-y-auto">
-            {unjoinedGroups.length > 0
+            {!isLoading && unjoinedGroups.length > 0
               ? unjoinedGroups.map((group) => {
                   return (
                     <motion.div
@@ -219,7 +234,7 @@ export default function GroupTable() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.6, type: "spring" }}
+                      transition={{ duration: 1, type: "spring" }}
                     >
                       <div className="flex flex-row justify-between items-center w-5/6 p-4 rounded-xl shadow-md hover:scale-[1.02] transition-transform">
                         <div className="flex flex-col w-full h-full items-start justify-between">
@@ -254,5 +269,29 @@ export default function GroupTable() {
         </div>
       </div>
     </div>
+  );
+};
+
+export default function Group() {
+  const [isViewingGroup, setIsViewingGroup] = useState(false);
+  const [groupID, setGroupID] = useState(0);
+  const [groupName, setGroupName] = useState(0);
+
+  const viewGroup = (groupID, groupName) => {
+    setIsViewingGroup((prev) => !prev);
+    setGroupID(groupID);
+    setGroupName(groupName);
+  };
+
+  const backToGroupList = () => {
+    setIsViewingGroup(false);
+    setGroupID(0);
+    setGroupName("");
+  };
+
+  return isViewingGroup ? (
+    <Event backToGroupList={backToGroupList} groupID={groupID} groupName={groupName} />
+  ) : (
+    <GroupTable viewGroup={viewGroup} />
   );
 }
