@@ -10,8 +10,9 @@ import { Separator } from "@/components/ui/separator";
 import { Eye, Navigation, Plus, Star, UsersRound } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { UserAuth } from "../context/AuthContext";
 
-const USER_ID = "user5";
+const USER_ID = "BejlL3LKgRgPHPy8nRr8b0OJlSg2";
 
 const CreateGroupDialog = ({ setJoinedGroups, setOpen }) => {
   const [groupName, setGroupName] = useState("");
@@ -30,7 +31,6 @@ const CreateGroupDialog = ({ setJoinedGroups, setOpen }) => {
         group_name: groupName,
       });
       const newGroup = response.data.group;
-      console.log("新組別:", response.data);
 
       setJoinedGroups((prev) => [...prev, newGroup]);
       setOpen(false);
@@ -69,7 +69,6 @@ const CreateGroupDialog = ({ setJoinedGroups, setOpen }) => {
 };
 
 const GroupTable = ({ viewGroup }) => {
-  // const { user } = UserAuth();
   const [open, setOpen] = useState(false);
   const [groups, setGroups] = useState([]);
   const [joinedGroups, setJoinedGroups] = useState([]);
@@ -155,7 +154,7 @@ const GroupTable = ({ viewGroup }) => {
 
           <Separator />
 
-          <div className="flex flex-col w-full gap-4 justify-between items-center p-2 max-h-[1100px] overflow-y-auto">
+          <div className="flex flex-col w-full gap-4 justify-between items-center p-2 max-h-[700px] overflow-y-auto">
             {isLoading ? (
               Array.from({ length: 4 }).map((_, index) => (
                 <Skeleton key={`skeleton-${index}`} className="w-full h-[100px] rounded-xl shadow-lg" />
@@ -221,7 +220,7 @@ const GroupTable = ({ viewGroup }) => {
             <h1 className="text-xl font-bold">其他組別</h1>
           </div>
           <Separator />
-          <div className="flex flex-col w-full gap-4 justify-between items-center p-2 max-h-[1100px] overflow-y-auto">
+          <div className="flex flex-col w-full gap-4 justify-between items-center p-2 max-h-[700px] overflow-y-auto">
             {isLoading ? (
               Array.from({ length: 4 }).map((_, index) => (
                 <Skeleton key={`skeleton-${index}`} className="w-full h-[100px] rounded-xl shadow-lg" />

@@ -6,6 +6,8 @@ import axios from "axios";
 import { io } from "socket.io-client";
 import { Separator } from "@/components/ui/separator";
 import { Award, Trophy, UsersRound } from "lucide-react";
+import { UserAuth } from "../context/AuthContext";
+import { Button } from "@/components/ui/button";
 
 const SCORE = [
   { group_id: "1", group_score: 1, group_name: "awards" },
@@ -41,7 +43,7 @@ const SCORE = [
 ];
 
 export default function Board() {
-  // const { user } = UserAuth();
+  const { user, logOut } = UserAuth();
   const [scores, setScores] = useState([]);
 
   useEffect(() => {
@@ -88,11 +90,22 @@ export default function Board() {
     };
   }, []);
 
+  const handleSignOut = async () => {
+    try {
+      await logOut();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4 w-full h-screen p-6">
-      <div className="flex flex-row w-full py-4 items-center gap-4">
-        <Trophy size={32} className="text-primary" />
-        <h1 className="text-3xl font-bold">即時排行榜</h1>
+      <div className="flex flex-row w-full justify-between items-center">
+        <div className="flex flex-row w-full py-4 items-center gap-4">
+          <Trophy size={32} className="text-primary" />
+          <h1 className="text-3xl font-bold">即時排行榜</h1>
+        </div>
+        <Button onClick={handleSignOut}>登出</Button>
       </div>
 
       <Separator />

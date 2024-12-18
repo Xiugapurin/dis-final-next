@@ -8,8 +8,9 @@ import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Award, Navigation, Pencil, Star, User, UsersRound } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import { UserAuth } from "../context/AuthContext";
 
-const USER_ID = "user5";
+const USER_ID = "BejlL3LKgRgPHPy8nRr8b0OJlSg2";
 
 const formatDate = (dateString) => {
   return new Date(dateString).toLocaleTimeString();
@@ -19,6 +20,7 @@ export default function Event({ backToGroupList, groupID, groupName }) {
   const [posts, setPosts] = useState([]);
   const [members, setMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [score, setScore] = useState(0);
   const [hasUserPosts, setHasUserPosts] = useState(false);
   const [content, setContent] = useState("");
   const [error, setError] = useState("");
@@ -35,6 +37,7 @@ export default function Event({ backToGroupList, groupID, groupName }) {
         const data = response.data;
 
         setPosts(data.posts);
+        setScore(data.group_score);
         setMembers(data.members);
         setHasUserPosts(data.has_user_posts);
       } catch (error) {
@@ -62,6 +65,7 @@ export default function Event({ backToGroupList, groupID, groupName }) {
       const data = response.data;
 
       setPosts((prev) => [...prev, data.post]);
+      setScore(data.score);
       setHasUserPosts(true);
     } catch (error) {
       console.error(error);
@@ -128,12 +132,12 @@ export default function Event({ backToGroupList, groupID, groupName }) {
                 members.length
               })`}</h1>
             </div>
-            <div className="flex flex-col w-full gap-6 max-h-[400px] overflow-y-auto">
+            <div className="flex flex-col w-full gap-6 p-2 overflow-y-auto">
               {posts.length > 0 ? (
                 posts.map((post) => (
                   <div
                     key={post.post_id}
-                    className="flex flex-col w-full min-h-[160] bg-gradient-to-br bg-white p-4 gap-3 rounded-lg shadow-lg hover:scale-[1.02] transition-transform"
+                    className="flex flex-col w-full bg-gradient-to-br bg-white p-4 gap-3 rounded-lg shadow-lg hover:scale-[1.02] transition-transform"
                   >
                     <div className="flex flex-row w-full justify-between items-center">
                       <div className="flex flex-row gap-3 font-bold">
@@ -163,7 +167,7 @@ export default function Event({ backToGroupList, groupID, groupName }) {
             </div>
 
             <div className="flex w-full py-4 justify-center items-center">
-              <h2 className="text-7xl text-primary font-serif">0</h2>
+              <h2 className="text-7xl text-primary font-serif">{score}</h2>
             </div>
 
             <Separator />
