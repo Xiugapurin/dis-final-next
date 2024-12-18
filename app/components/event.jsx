@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 // import { UserAuth } from "../context/AuthContext";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,7 @@ import { ArrowLeft, Award, Navigation, Pencil, Star, User, UsersRound } from "lu
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 
-const USER_ID = "user4";
+const USER_ID = "user5";
 
 const formatDate = (dateString) => {
   return new Date(dateString).toLocaleTimeString();
@@ -125,9 +124,11 @@ export default function Event({ backToGroupList, groupID, groupName }) {
 
             <div className="flex flex-row gap-3 items-center">
               <Star size={24} />
-              <h1 className="text-xl font-bold">{`團隊貼文 (${posts.length ? posts.length : 0}/${members.length})`}</h1>
+              <h1 className="text-xl font-bold">{`團隊打卡記錄 (${posts.length ? posts.length : 0}/${
+                members.length
+              })`}</h1>
             </div>
-            <div className="flex flex-col w-full">
+            <div className="flex flex-col w-full gap-6 max-h-[400px] overflow-y-auto">
               {posts.length > 0 ? (
                 posts.map((post) => (
                   <div
@@ -162,7 +163,7 @@ export default function Event({ backToGroupList, groupID, groupName }) {
             </div>
 
             <div className="flex w-full py-4 justify-center items-center">
-              <h2 className="text-7xl text-primary font-serif">100</h2>
+              <h2 className="text-7xl text-primary font-serif">0</h2>
             </div>
 
             <Separator />
@@ -172,7 +173,7 @@ export default function Event({ backToGroupList, groupID, groupName }) {
               <h1 className="text-xl font-bold">{`團隊成員 (${members.length})`}</h1>
             </div>
 
-            <div className="flex flex-col w-full h-full gap-3">
+            <div className="flex flex-col w-full h-full gap-3 max-h-[400px] overflow-y-auto">
               {members.map((member) => (
                 <div
                   key={member.user_id}

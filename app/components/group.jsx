@@ -10,9 +10,8 @@ import { Separator } from "@/components/ui/separator";
 import { Eye, Navigation, Plus, Star, UsersRound } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { flightRouterStateSchema } from "next/dist/server/app-render/types";
 
-const USER_ID = "user4";
+const USER_ID = "user5";
 
 const CreateGroupDialog = ({ setJoinedGroups, setOpen }) => {
   const [groupName, setGroupName] = useState("");
@@ -24,7 +23,6 @@ const CreateGroupDialog = ({ setJoinedGroups, setOpen }) => {
       return;
     }
 
-    console.log(groupName);
     setError("");
 
     try {
@@ -98,7 +96,14 @@ const GroupTable = ({ viewGroup }) => {
 
     fetchGroups();
   }, []);
-  // }, [user.accessToken]);
+
+  useEffect(() => {
+    const joinedGroups = groups.filter((group) => group.is_joined);
+    const unjoinedGroups = groups.filter((group) => !group.is_joined).slice(0, 20);
+
+    setJoinedGroups(joinedGroups);
+    setUnjoinedGroups(unjoinedGroups);
+  }, [groups]);
 
   const handleJoinGroup = async (group_id) => {
     try {
@@ -113,14 +118,6 @@ const GroupTable = ({ viewGroup }) => {
       console.error("加入 Group 時發生錯誤:", error);
     }
   };
-
-  useEffect(() => {
-    const joinedGroups = groups.filter((group) => group.is_joined);
-    const unjoinedGroups = groups.filter((group) => !group.is_joined);
-
-    setJoinedGroups(joinedGroups);
-    setUnjoinedGroups(unjoinedGroups);
-  }, [groups]);
 
   return (
     <div className="flex flex-col gap-4 h-screen p-6">
@@ -225,46 +222,59 @@ const GroupTable = ({ viewGroup }) => {
           </div>
           <Separator />
           <div className="flex flex-col w-full gap-4 justify-between items-center p-2 max-h-[580px] overflow-y-auto">
-            {!isLoading && unjoinedGroups.length > 0
-              ? unjoinedGroups.map((group) => {
-                  return (
-                    <motion.div
-                      key={`unjoined-${group.group_id}`}
-                      className="flex flex-row w-full gap-4"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 1, type: "spring" }}
+            {isLoading ? (
+              Array.from({ length: 4 }).map((_, index) => (
+                <Skeleton key={`skeleton-${index}`} className="w-full h-[100px] rounded-xl shadow-lg" />
+              ))
+            ) : unjoinedGroups.length > 0 ? (
+              unjoinedGroups.map((group) => {
+                return (
+                  <motion.div
+                    key={`unjoined-${group.group_id}`}
+                    className="flex flex-row w-full gap-4"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 1, type: "spring" }}
+                  >
+                    <div className="flex flex-row justify-between items-center w-5/6 p-4 rounded-xl shadow-md hover:scale-[1.02] transition-transform">
+                      <div className="flex flex-col w-full h-full items-start justify-between">
+                        <div className="flex flex-row gap-2 items-center">
+                          <UsersRound size={16} />
+                          <h2 className="text-sm">組別</h2>
+                        </div>
+                        <p className="text-lg font-bold">{group.group_name}</p>
+                      </div>
+
+                      <Separator orientation="v" />
+
+                      <div className="flex flex-col w-1/3 ml-4 justify-between items-center">
+                        <h2 className="text-sm font-bold">成員人數</h2>
+                        <p className="text-3xl text-primary">{group.member_count}</p>
+                      </div>
+                    </div>
+                    <div
+                      className="flex flex-col w-1/6 h-full gap-1 justify-center items-center hover:cursor-pointer hover:scale-105 transition-transform"
+                      onClick={() => handleJoinGroup(group.group_id)}
                     >
-                      <div className="flex flex-row justify-between items-center w-5/6 p-4 rounded-xl shadow-md hover:scale-[1.02] transition-transform">
-                        <div className="flex flex-col w-full h-full items-start justify-between">
-                          <div className="flex flex-row gap-2 items-center">
-                            <UsersRound size={16} />
-                            <h2 className="text-sm">組別</h2>
-                          </div>
-                          <p className="text-lg font-bold">{group.group_name}</p>
-                        </div>
-
-                        <Separator orientation="v" />
-
-                        <div className="flex flex-col w-1/3 ml-4 justify-between items-center">
-                          <h2 className="text-sm font-bold">成員人數</h2>
-                          <p className="text-3xl text-primary">{group.member_count}</p>
-                        </div>
-                      </div>
-                      <div
-                        className="flex flex-col w-1/6 h-full gap-1 justify-center items-center hover:cursor-pointer hover:scale-105 transition-transform"
-                        onClick={() => handleJoinGroup(group.group_id)}
-                      >
-                        <Plus />
-                        <p className="text-md">加入</p>
-                      </div>
-                    </motion.div>
-                  );
-                })
-              : Array.from({ length: 4 }).map((_, index) => (
-                  <Skeleton key={`skeleton-${index}`} className="w-full h-[100px] rounded-xl shadow-lg" />
-                ))}
+                      <Plus />
+                      <p className="text-md">加入</p>
+                    </div>
+                  </motion.div>
+                );
+              })
+            ) : (
+              <div
+                className="flex flex-col justify-between items-center gap-3 w-full bg-white p-4 rounded-xl shadow-md hover:cursor-pointer hover:scale-[1.02] transition-transform"
+                key="create-group-button-1"
+              >
+                <h1 className="text-lg font-bold">你已加入所有組別！</h1>
+                <Separator />
+                <div className="flex flex-row gap-2 justify-between items-center">
+                  <h1 className="text-lg">在左側選擇查看你的組別</h1>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

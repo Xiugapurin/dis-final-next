@@ -1,8 +1,7 @@
-import LeaderBoard from "./components/leader-board/page";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import Group from "./components/group";
 import Board from "./components/board";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 export default function Home() {
   return (
