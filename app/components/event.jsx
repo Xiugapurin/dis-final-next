@@ -30,10 +30,12 @@ export default function Event({ backToGroupList, groupID, groupName }) {
       setIsLoading(true);
 
       try {
-        // const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URI}/api/paletters`, {
+        // const response = await axios.get(`https://flask-server-503510295785.asia-east1.run.app/api/paletters`, {
         //   headers: { Authorization: `Bearer ${user.accessToken}` },
         // });
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URI}/api/group/${groupID}/${USER_ID}`);
+        const response = await axios.get(
+          `https://flask-server-503510295785.asia-east1.run.app/api/group/${groupID}/${USER_ID}`
+        );
         const data = response.data;
 
         setPosts(data.posts);
@@ -59,9 +61,12 @@ export default function Event({ backToGroupList, groupID, groupName }) {
     setError("");
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URI}/api/post/${groupID}/${USER_ID}`, {
-        content: content.trim(),
-      });
+      const response = await axios.post(
+        `https://flask-server-503510295785.asia-east1.run.app/api/post/${groupID}/${USER_ID}`,
+        {
+          content: content.trim(),
+        }
+      );
       const data = response.data;
 
       setPosts((prev) => [...prev, data.post]);

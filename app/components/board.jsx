@@ -49,7 +49,7 @@ export default function Board() {
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URI}/api/leaderboard`);
+        const response = await axios.get(`https://flask-server-503510295785.asia-east1.run.app/api/leaderboard`);
         const data = response.data;
 
         setScores(data);

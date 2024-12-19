@@ -27,7 +27,7 @@ const CreateGroupDialog = ({ setJoinedGroups, setOpen }) => {
     setError("");
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URI}/api/group/0/${USER_ID}`, {
+      const response = await axios.post(`https://flask-server-503510295785.asia-east1.run.app/api/group/0/${USER_ID}`, {
         group_name: groupName,
       });
       const newGroup = response.data.group;
@@ -80,10 +80,10 @@ const GroupTable = ({ viewGroup }) => {
       setIsLoading(true);
 
       try {
-        // const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URI}/api/paletters`, {
+        // const response = await axios.get(`https://flask-server-503510295785.asia-east1.run.app/api/paletters`, {
         //   headers: { Authorization: `Bearer ${user.accessToken}` },
         // });
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URI}/api/groups/${USER_ID}`);
+        const response = await axios.get(`https://flask-server-503510295785.asia-east1.run.app/api/groups/${USER_ID}`);
         const data = response.data;
 
         setGroups(data);
@@ -106,9 +106,12 @@ const GroupTable = ({ viewGroup }) => {
 
   const handleJoinGroup = async (group_id) => {
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URI}/api/group/${group_id}/${USER_ID}`, {
-        group_name: "",
-      });
+      const response = await axios.post(
+        `https://flask-server-503510295785.asia-east1.run.app/api/group/${group_id}/${USER_ID}`,
+        {
+          group_name: "",
+        }
+      );
       const data = response.data.group;
       console.log(data);
       setJoinedGroups((prev) => [...prev, data]);
