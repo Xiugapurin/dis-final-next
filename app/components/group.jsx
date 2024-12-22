@@ -157,7 +157,7 @@ const GroupTable = ({ viewGroup }) => {
 
           <Separator />
 
-          <div className="flex flex-col w-full gap-4 justify-between items-center p-2 max-h-[700px] overflow-y-auto">
+          <div className="flex flex-col w-full gap-4 justify-between items-center p-2 max-h-[1100px] overflow-y-auto">
             {isLoading ? (
               Array.from({ length: 4 }).map((_, index) => (
                 <Skeleton key={`skeleton-${index}`} className="w-full h-[100px] rounded-xl shadow-lg" />
@@ -223,7 +223,7 @@ const GroupTable = ({ viewGroup }) => {
             <h1 className="text-xl font-bold">其他組別</h1>
           </div>
           <Separator />
-          <div className="flex flex-col w-full gap-4 justify-between items-center p-2 max-h-[700px] overflow-y-auto">
+          <div className="flex flex-col w-full gap-4 justify-between items-center p-2 max-h-[1100px] overflow-y-auto">
             {isLoading ? (
               Array.from({ length: 4 }).map((_, index) => (
                 <Skeleton key={`skeleton-${index}`} className="w-full h-[100px] rounded-xl shadow-lg" />
